@@ -1,0 +1,45 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Environment
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Test coverage
+coverage/
+
+# Cloudflare Tunnel
+*.json.bak
+cloudflared.log
+
+# Session data
+data/
+*.db
+
+# Binary files
+*.exe
+*.msi
+*.zip
+ngrok*
+cloudflared*
+
+# Misc
+nul
+pm2-status.txt
+*.txt.bak

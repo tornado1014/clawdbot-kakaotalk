@@ -1,0 +1,37 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(tasklist:*)",
+      "Bash(findstr:*)",
+      "Bash(netstat:*)",
+      "Bash(npm install:*)",
+      "Bash(curl:*)",
+      "Bash(npm run dev:*)",
+      "Bash(timeout:*)",
+      "Bash(ping:*)",
+      "Bash(python3:*)",
+      "Bash(taskkill:*)",
+      "Bash(powershell -Command \"Stop-Process -Id 26804 -Force\")",
+      "Bash(powershell.exe -Command \"Stop-Process -Id 26804 -Force -ErrorAction SilentlyContinue\")",
+      "Bash(echo:*)",
+      "Bash(cmd.exe /c \"taskkill /PID 26804 /F\")",
+      "Bash(wmic process where \"ProcessId=26804\" delete)",
+      "Bash(npm run build:*)",
+      "Bash(node:*)",
+      "Bash(wmic process where \"ProcessId=28152\" delete)",
+      "Bash(wmic:*)",
+      "Bash(npx pm2:*)",
+      "Bash(powershell.exe -Command \"cd D:\\\\Work_with_ClaudeD\\\\clawdbot-kakaotalk; npx pm2 start dist/index.js --name clawdbot-kakaotalk\")",
+      "Bash(powershell.exe -Command \"npx pm2 save\")",
+      "Bash(powershell.exe -Command \"schtasks /create /tn ''ClawdbotKakaotalk'' /tr ''D:\\\\Work_with_ClaudeD\\\\clawdbot-kakaotalk\\\\start-pm2.bat'' /sc onlogon /rl highest /f\")",
+      "WebSearch",
+      "Bash(pip install:*)",
+      "Bash(python generate_report.py:*)",
+      "Bash(\"C:\\\\Users\\\\user\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python312\\\\python.exe\" generate_report.py)",
+      "Bash(pm2 list:*)",
+      "Bash(powershell -Command \"npx pm2 list\")",
+      "Bash(powershell -Command \"netstat -ano | Select-String ''LISTENING'' | Select-String ''3000|3001''\")",
+      "Bash(powershell:*)"
+    ]
+  }
+}

@@ -1,0 +1,1856 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🦞 Clawdbot × 카카오톡 통합 - 인터랙티브 가이드</title>
+
+    <!-- Fonts -->
+    <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #FF6B35;
+            --primary-light: #FF8A5C;
+            --primary-dark: #E5541F;
+            --secondary: #4ECDC4;
+            --secondary-light: #7EEEE6;
+            --accent: #FFE66D;
+            --bg-gradient-1: #FFF8F5;
+            --bg-gradient-2: #F5FFFE;
+            --text-primary: #2D3436;
+            --text-secondary: #636E72;
+            --card-bg: #FFFFFF;
+            --border: #E5E9EC;
+            --success: #00B894;
+            --warning: #FDCB6E;
+            --error: #E17055;
+            --code-bg: #F8F9FA;
+            --shadow-sm: 0 2px 8px rgba(45, 52, 54, 0.08);
+            --shadow-md: 0 4px 20px rgba(45, 52, 54, 0.12);
+            --shadow-lg: 0 8px 40px rgba(45, 52, 54, 0.16);
+            --shadow-glow: 0 0 30px rgba(255, 107, 53, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-1) 0%, var(--bg-gradient-2) 100%);
+            color: var(--text-primary);
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            padding: 0.75rem 2rem;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+            background: rgba(255, 107, 53, 0.1);
+        }
+
+        /* Progress bar */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            z-index: 1001;
+            width: 0%;
+            transition: width 0.1s ease;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 6rem 2rem 4rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -30%;
+            width: 80%;
+            height: 150%;
+            background: radial-gradient(ellipse at center, rgba(255, 107, 53, 0.1) 0%, transparent 70%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.5; }
+            50% { transform: scale(1.1) rotate(5deg); opacity: 0.8; }
+        }
+
+        .hero-icon {
+            font-size: 6rem;
+            margin-bottom: 1rem;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin-bottom: 2rem;
+        }
+
+        .hero-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            justify-content: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .tag {
+            padding: 0.5rem 1rem;
+            background: var(--card-bg);
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+        }
+
+        .tag:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .tag.primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .tag.secondary {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            box-shadow: var(--shadow-sm);
+            border: 2px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            background: rgba(255, 107, 53, 0.05);
+        }
+
+        /* Section Styles */
+        .section {
+            padding: 5rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-number {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border-radius: 50%;
+            font-weight: 700;
+            font-size: 1.1rem;
+            line-height: 40px;
+            margin-bottom: 1rem;
+        }
+
+        .section h2 {
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+        }
+
+        .section-desc {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Architecture Flow */
+        .arch-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .arch-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .arch-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+        .arch-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .arch-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .arch-card h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .arch-card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* Flow Diagram */
+        .flow-diagram {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 3rem;
+            box-shadow: var(--shadow-md);
+            margin: 3rem 0;
+            overflow-x: auto;
+        }
+
+        .flow-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            min-width: min-content;
+        }
+
+        .flow-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.1) 0%, rgba(78, 205, 196, 0.1) 100%);
+            border-radius: 16px;
+            min-width: 140px;
+            transition: all 0.3s ease;
+        }
+
+        .flow-item:hover {
+            transform: scale(1.05);
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.2) 0%, rgba(78, 205, 196, 0.2) 100%);
+        }
+
+        .flow-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .flow-label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+        }
+
+        .flow-sublabel {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        .flow-arrow {
+            font-size: 1.5rem;
+            color: var(--primary);
+            animation: arrowPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes arrowPulse {
+            0%, 100% { opacity: 0.5; transform: translateX(0); }
+            50% { opacity: 1; transform: translateX(5px); }
+        }
+
+        /* File Structure */
+        .file-tree {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        .file-tree-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 1rem;
+        }
+
+        .file-tree-title {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .tree-item {
+            padding: 0.5rem 0;
+            padding-left: calc(var(--depth, 0) * 1.5rem);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .tree-item:hover {
+            background: rgba(255, 107, 53, 0.08);
+        }
+
+        .tree-item.folder {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .tree-item.file {
+            color: var(--text-secondary);
+        }
+
+        .tree-item.highlight {
+            background: rgba(78, 205, 196, 0.15);
+            color: var(--secondary);
+        }
+
+        .tree-icon {
+            width: 20px;
+            text-align: center;
+        }
+
+        .tree-desc {
+            margin-left: auto;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            font-family: 'Pretendard', sans-serif;
+        }
+
+        /* Code Blocks */
+        .code-section {
+            margin: 2rem 0;
+        }
+
+        .code-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0;
+        }
+
+        .code-tab {
+            padding: 0.75rem 1.25rem;
+            background: var(--code-bg);
+            border: none;
+            border-radius: 12px 12px 0 0;
+            font-family: 'Pretendard', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .code-tab.active {
+            background: var(--card-bg);
+            color: var(--primary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .code-block {
+            background: var(--card-bg);
+            border-radius: 0 16px 16px 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            background: var(--code-bg);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .code-filename {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .code-copy {
+            padding: 0.5rem 1rem;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .code-copy:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .code-content {
+            padding: 1.5rem;
+            overflow-x: auto;
+        }
+
+        .code-content pre {
+            margin: 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* Module Cards */
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .module-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+            transition: all 0.4s ease;
+            border-left: 4px solid var(--primary);
+        }
+
+        .module-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .module-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .module-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.1) 0%, rgba(78, 205, 196, 0.1) 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .module-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .module-file {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .module-desc {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .module-features {
+            list-style: none;
+        }
+
+        .module-features li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .module-features li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--secondary);
+            font-weight: 600;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            max-width: 800px;
+            margin: 3rem auto;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, var(--primary), var(--secondary));
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 60px;
+            padding-bottom: 2rem;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: 12px;
+            top: 0;
+            width: 18px;
+            height: 18px;
+            background: var(--primary);
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .timeline-item.completed .timeline-dot {
+            background: var(--success);
+        }
+
+        .timeline-content {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .timeline-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .timeline-title .check {
+            color: var(--success);
+        }
+
+        .timeline-desc {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* Command Table */
+        .command-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--card-bg);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+        }
+
+        .command-table th,
+        .command-table td {
+            padding: 1rem 1.5rem;
+            text-align: left;
+        }
+
+        .command-table th {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .command-table tr:nth-child(even) {
+            background: var(--code-bg);
+        }
+
+        .command-table tr:hover {
+            background: rgba(255, 107, 53, 0.05);
+        }
+
+        .command-table code {
+            background: rgba(78, 205, 196, 0.15);
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--secondary);
+        }
+
+        /* Accordion */
+        .accordion {
+            margin: 2rem 0;
+        }
+
+        .accordion-item {
+            background: var(--card-bg);
+            border-radius: 16px;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+        }
+
+        .accordion-header {
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .accordion-header:hover {
+            background: rgba(255, 107, 53, 0.05);
+        }
+
+        .accordion-title {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .accordion-icon {
+            font-size: 1.25rem;
+        }
+
+        .accordion-arrow {
+            transition: transform 0.3s ease;
+        }
+
+        .accordion-item.open .accordion-arrow {
+            transform: rotate(180deg);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+        }
+
+        .accordion-item.open .accordion-content {
+            max-height: 2000px;
+        }
+
+        .accordion-body {
+            padding: 0 1.5rem 1.5rem;
+        }
+
+        /* Steps */
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .step {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .step:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .step-number {
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .step-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .step-desc {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--text-primary);
+            color: white;
+            padding: 4rem 2rem 2rem;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+        }
+
+        .footer-section h4 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: var(--primary-light);
+        }
+
+        .footer-section p,
+        .footer-section a {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            line-height: 1.8;
+        }
+
+        .footer-section a {
+            text-decoration: none;
+            display: block;
+            transition: color 0.3s ease;
+        }
+
+        .footer-section a:hover {
+            color: var(--primary-light);
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 3rem auto 0;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.85rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero {
+                padding: 5rem 1rem 3rem;
+            }
+
+            .section {
+                padding: 3rem 1rem;
+            }
+
+            .flow-diagram {
+                padding: 1.5rem;
+            }
+
+            .flow-container {
+                flex-direction: column;
+            }
+
+            .flow-arrow {
+                transform: rotate(90deg);
+            }
+
+            .module-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .steps {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .fade-in.visible {
+            animation: fadeIn 0.6s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+            cursor: help;
+        }
+
+        .tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--text-primary);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .tooltip:hover::after {
+            opacity: 1;
+            visibility: visible;
+            bottom: calc(100% + 8px);
+        }
+
+        /* Alert Box */
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            margin: 1rem 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .alert-warning {
+            background: rgba(253, 203, 110, 0.2);
+            border-left: 4px solid var(--warning);
+        }
+
+        .alert-info {
+            background: rgba(78, 205, 196, 0.15);
+            border-left: 4px solid var(--secondary);
+        }
+
+        .alert-icon {
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .alert-content {
+            font-size: 0.95rem;
+        }
+
+        .alert-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Progress Bar -->
+    <div class="progress-bar" id="progressBar"></div>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-logo">
+            <span>🦞</span>
+            Clawdbot × 카카오톡
+        </div>
+        <ul class="nav-links">
+            <li><a href="#overview">개요</a></li>
+            <li><a href="#architecture">아키텍처</a></li>
+            <li><a href="#modules">모듈</a></li>
+            <li><a href="#setup">설치 가이드</a></li>
+            <li><a href="#usage">사용법</a></li>
+            <li><a href="#roadmap">로드맵</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="overview">
+        <div class="hero-icon">🦞</div>
+        <h1>Clawdbot × 카카오톡</h1>
+        <p class="hero-subtitle">
+            카카오톡 채널을 통해 AI 어시스턴트와 대화하고, 시스템 제어까지 가능하게 만드는 통합 플러그인
+        </p>
+        <div class="hero-tags">
+            <span class="tag primary">TypeScript</span>
+            <span class="tag secondary">Express.js</span>
+            <span class="tag">카카오 AI 챗봇</span>
+            <span class="tag">비동기 콜백</span>
+            <span class="tag">PM2</span>
+            <span class="tag">Webhook</span>
+        </div>
+        <div class="cta-buttons">
+            <a href="#setup" class="btn btn-primary">
+                🚀 빠른 시작
+            </a>
+            <a href="#architecture" class="btn btn-secondary">
+                📐 아키텍처 보기
+            </a>
+        </div>
+    </section>
+
+    <!-- Features Overview -->
+    <section class="section" id="features">
+        <div class="section-header">
+            <div class="section-number">1</div>
+            <h2>주요 기능</h2>
+            <p class="section-desc">Clawdbot을 카카오톡에서 사용할 수 있게 해주는 핵심 기능들</p>
+        </div>
+
+        <div class="arch-container">
+            <div class="arch-card fade-in">
+                <div class="arch-icon">📱</div>
+                <h3>카카오톡 연동</h3>
+                <p>카카오톡 채널에서 AI 어시스턴트와 자연스러운 대화. 별도 앱 설치 없이 바로 사용 가능.</p>
+            </div>
+            <div class="arch-card fade-in">
+                <div class="arch-icon">🔐</div>
+                <h3>Pairing 인증</h3>
+                <p>코드 기반 인증으로 가족/팀 멤버만 사용 가능. 세션 격리로 개인 대화 보호.</p>
+            </div>
+            <div class="arch-card fade-in">
+                <div class="arch-icon">💬</div>
+                <h3>컨텍스트 유지</h3>
+                <p>최대 20개 대화 기록 유지. 이전 대화 맥락을 기억하고 연속적인 대화 가능.</p>
+            </div>
+            <div class="arch-card fade-in">
+                <div class="arch-icon">⚡</div>
+                <h3>5초 타임아웃 우회</h3>
+                <p>카카오 AI 챗봇 콜백 기능 활용. 복잡한 AI 응답도 안정적으로 전달.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Architecture Section -->
+    <section class="section" id="architecture">
+        <div class="section-header">
+            <div class="section-number">2</div>
+            <h2>시스템 아키텍처</h2>
+            <p class="section-desc">메시지가 어떻게 처리되는지 흐름을 이해해보세요</p>
+        </div>
+
+        <div class="flow-diagram">
+            <div class="flow-container">
+                <div class="flow-item">
+                    <div class="flow-icon">👤</div>
+                    <div class="flow-label">카카오톡 사용자</div>
+                    <div class="flow-sublabel">메시지 전송</div>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-item">
+                    <div class="flow-icon">📨</div>
+                    <div class="flow-label">카카오 서버</div>
+                    <div class="flow-sublabel">POST /skill</div>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-item">
+                    <div class="flow-icon">🌐</div>
+                    <div class="flow-label">Webhook Server</div>
+                    <div class="flow-sublabel">Express Handler</div>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-item">
+                    <div class="flow-icon">🔒</div>
+                    <div class="flow-label">Session Manager</div>
+                    <div class="flow-sublabel">인증 확인</div>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-item">
+                    <div class="flow-icon">🦞</div>
+                    <div class="flow-label">Clawdbot Bridge</div>
+                    <div class="flow-sublabel">AI 처리</div>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-item">
+                    <div class="flow-icon">📤</div>
+                    <div class="flow-label">Kakao API</div>
+                    <div class="flow-sublabel">콜백 전송</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="alert alert-info">
+            <div class="alert-icon">💡</div>
+            <div class="alert-content">
+                <div class="alert-title">콜백 방식의 핵심</div>
+                카카오 스킬 서버는 5초 내 응답해야 합니다. <code>callbackUrl</code>이 있으면 즉시 "🦞 생각 중..." 응답 후,
+                AI 처리 완료 시 콜백 URL로 실제 응답을 전송합니다.
+            </div>
+        </div>
+
+        <!-- File Structure -->
+        <h3 style="margin: 3rem 0 1.5rem; font-size: 1.3rem;">📁 프로젝트 구조</h3>
+        <div class="file-tree">
+            <div class="file-tree-header">
+                <span>📂</span>
+                <span class="file-tree-title">clawdbot-kakaotalk/</span>
+            </div>
+            <div class="tree-item folder" style="--depth: 0;">
+                <span class="tree-icon">📁</span>
+                <span>src/</span>
+                <span class="tree-desc">소스 코드</span>
+            </div>
+            <div class="tree-item file highlight" style="--depth: 1;">
+                <span class="tree-icon">📄</span>
+                <span>index.ts</span>
+                <span class="tree-desc">메인 엔트리</span>
+            </div>
+            <div class="tree-item file highlight" style="--depth: 1;">
+                <span class="tree-icon">📄</span>
+                <span>webhook-server.ts</span>
+                <span class="tree-desc">Express 서버</span>
+            </div>
+            <div class="tree-item file highlight" style="--depth: 1;">
+                <span class="tree-icon">📄</span>
+                <span>kakao-api.ts</span>
+                <span class="tree-desc">카카오 API 클라이언트</span>
+            </div>
+            <div class="tree-item file highlight" style="--depth: 1;">
+                <span class="tree-icon">📄</span>
+                <span>clawdbot-bridge.ts</span>
+                <span class="tree-desc">Clawdbot 연동</span>
+            </div>
+            <div class="tree-item file highlight" style="--depth: 1;">
+                <span class="tree-icon">📄</span>
+                <span>session-manager.ts</span>
+                <span class="tree-desc">세션/인증 관리</span>
+            </div>
+            <div class="tree-item file" style="--depth: 1;">
+                <span class="tree-icon">📄</span>
+                <span>config.ts</span>
+                <span class="tree-desc">설정 로더</span>
+            </div>
+            <div class="tree-item file" style="--depth: 1;">
+                <span class="tree-icon">📄</span>
+                <span>types.ts</span>
+                <span class="tree-desc">타입 정의</span>
+            </div>
+            <div class="tree-item file" style="--depth: 1;">
+                <span class="tree-icon">📄</span>
+                <span>logger.ts</span>
+                <span class="tree-desc">로깅</span>
+            </div>
+            <div class="tree-item folder" style="--depth: 0;">
+                <span class="tree-icon">📁</span>
+                <span>data/</span>
+                <span class="tree-desc">데이터 저장</span>
+            </div>
+            <div class="tree-item file" style="--depth: 1;">
+                <span class="tree-icon">📄</span>
+                <span>allowed-users.json</span>
+                <span class="tree-desc">인증된 사용자</span>
+            </div>
+            <div class="tree-item folder" style="--depth: 0;">
+                <span class="tree-icon">📁</span>
+                <span>scripts/</span>
+                <span class="tree-desc">유틸리티 스크립트</span>
+            </div>
+            <div class="tree-item file" style="--depth: 0;">
+                <span class="tree-icon">⚙️</span>
+                <span>ecosystem.config.js</span>
+                <span class="tree-desc">PM2 설정</span>
+            </div>
+            <div class="tree-item file" style="--depth: 0;">
+                <span class="tree-icon">🔧</span>
+                <span>.env</span>
+                <span class="tree-desc">환경 변수</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modules Section -->
+    <section class="section" id="modules">
+        <div class="section-header">
+            <div class="section-number">3</div>
+            <h2>핵심 모듈 설명</h2>
+            <p class="section-desc">각 모듈의 역할과 구현 세부사항을 알아보세요</p>
+        </div>
+
+        <div class="module-grid">
+            <div class="module-card fade-in">
+                <div class="module-header">
+                    <div class="module-icon">🌐</div>
+                    <div>
+                        <div class="module-title">Webhook Server</div>
+                        <div class="module-file">webhook-server.ts</div>
+                    </div>
+                </div>
+                <p class="module-desc">Express.js 기반 HTTP 서버. 카카오 스킬 요청을 받아 처리합니다.</p>
+                <ul class="module-features">
+                    <li><code>POST /skill</code> - 카카오 스킬 엔드포인트</li>
+                    <li><code>GET /health</code> - 헬스체크</li>
+                    <li>콜백 URL 유무에 따른 분기 처리</li>
+                    <li>에러 핸들링 미들웨어</li>
+                </ul>
+            </div>
+
+            <div class="module-card fade-in">
+                <div class="module-header">
+                    <div class="module-icon">📤</div>
+                    <div>
+                        <div class="module-title">Kakao API</div>
+                        <div class="module-file">kakao-api.ts</div>
+                    </div>
+                </div>
+                <p class="module-desc">카카오 응답 포맷 생성 및 콜백 전송을 담당합니다.</p>
+                <ul class="module-features">
+                    <li>텍스트/카드/캐러셀 응답 생성</li>
+                    <li>1000자 텍스트 자동 분할 (최대 3개)</li>
+                    <li>Quick Reply 버튼 추가</li>
+                    <li>콜백 URL로 비동기 응답 전송</li>
+                </ul>
+            </div>
+
+            <div class="module-card fade-in">
+                <div class="module-header">
+                    <div class="module-icon">🔒</div>
+                    <div>
+                        <div class="module-title">Session Manager</div>
+                        <div class="module-file">session-manager.ts</div>
+                    </div>
+                </div>
+                <p class="module-desc">사용자 세션과 인증을 관리합니다. 멀티유저 환경 지원.</p>
+                <ul class="module-features">
+                    <li>메모리 기반 세션 저장 (24시간 TTL)</li>
+                    <li>Pairing 코드 인증 (5회 제한)</li>
+                    <li>대화 기록 관리 (최대 20개)</li>
+                    <li>영속적 사용자 목록 (<code>allowed-users.json</code>)</li>
+                </ul>
+            </div>
+
+            <div class="module-card fade-in">
+                <div class="module-header">
+                    <div class="module-icon">🦞</div>
+                    <div>
+                        <div class="module-title">Clawdbot Bridge</div>
+                        <div class="module-file">clawdbot-bridge.ts</div>
+                    </div>
+                </div>
+                <p class="module-desc">Clawdbot Gateway HTTP API를 통해 AI와 통신합니다.</p>
+                <ul class="module-features">
+                    <li>OpenAI 호환 API 호출 (<code>/v1/chat/completions</code>)</li>
+                    <li>대화 히스토리 전달 (최근 10개)</li>
+                    <li>시스템 프롬프트 설정</li>
+                    <li>특수 명령어 처리 (<code>/help</code>, <code>/status</code>)</li>
+                </ul>
+            </div>
+
+            <div class="module-card fade-in">
+                <div class="module-header">
+                    <div class="module-icon">📋</div>
+                    <div>
+                        <div class="module-title">Types</div>
+                        <div class="module-file">types.ts</div>
+                    </div>
+                </div>
+                <p class="module-desc">TypeScript 타입 정의. 카카오 API 명세를 타입으로 표현.</p>
+                <ul class="module-features">
+                    <li><code>KakaoSkillRequest</code> - 스킬 요청</li>
+                    <li><code>KakaoSkillResponse</code> - 스킬 응답</li>
+                    <li><code>UserSession</code> - 세션 정보</li>
+                    <li><code>ServerConfig</code> - 서버 설정</li>
+                </ul>
+            </div>
+
+            <div class="module-card fade-in">
+                <div class="module-header">
+                    <div class="module-icon">⚙️</div>
+                    <div>
+                        <div class="module-title">Config & Logger</div>
+                        <div class="module-file">config.ts, logger.ts</div>
+                    </div>
+                </div>
+                <p class="module-desc">환경 변수 로드 및 Winston 기반 로깅 설정.</p>
+                <ul class="module-features">
+                    <li>dotenv로 <code>.env</code> 파일 로드</li>
+                    <li>Winston 로거 (컬러, 타임스탬프)</li>
+                    <li>파일 로깅 옵션 (5MB 롤링)</li>
+                    <li>설정 유효성 검사</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Setup Guide -->
+    <section class="section" id="setup">
+        <div class="section-header">
+            <div class="section-number">4</div>
+            <h2>설치 가이드</h2>
+            <p class="section-desc">단계별로 따라하면 누구나 설치할 수 있습니다</p>
+        </div>
+
+        <div class="steps">
+            <div class="step fade-in">
+                <div class="step-number">1</div>
+                <div class="step-title">📦 의존성 설치</div>
+                <div class="step-desc">프로젝트 폴더에서 npm install 실행</div>
+            </div>
+            <div class="step fade-in">
+                <div class="step-number">2</div>
+                <div class="step-title">🔧 환경 설정</div>
+                <div class="step-desc">.env.example을 복사하여 .env 생성 및 수정</div>
+            </div>
+            <div class="step fade-in">
+                <div class="step-number">3</div>
+                <div class="step-title">🚀 서버 실행</div>
+                <div class="step-desc">npm run dev (개발) 또는 npm start (프로덕션)</div>
+            </div>
+            <div class="step fade-in">
+                <div class="step-number">4</div>
+                <div class="step-title">🔗 터널 설정</div>
+                <div class="step-desc">ngrok 또는 Cloudflare Tunnel로 외부 노출</div>
+            </div>
+            <div class="step fade-in">
+                <div class="step-number">5</div>
+                <div class="step-title">🤖 카카오 설정</div>
+                <div class="step-desc">챗봇 관리자센터에서 스킬 서버 URL 등록</div>
+            </div>
+        </div>
+
+        <!-- Code Examples -->
+        <div class="code-section">
+            <div class="code-tabs">
+                <button class="code-tab active" data-tab="install">설치</button>
+                <button class="code-tab" data-tab="env">환경 변수</button>
+                <button class="code-tab" data-tab="run">실행</button>
+                <button class="code-tab" data-tab="pm2">PM2 설정</button>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-filename">
+                        <span>📄</span>
+                        <span id="currentFile">터미널</span>
+                    </span>
+                    <button class="code-copy" onclick="copyCode()">📋 복사</button>
+                </div>
+                <div class="code-content">
+                    <pre><code class="language-bash" id="codeContent"># 프로젝트 클론 및 의존성 설치
+cd clawdbot-kakaotalk
+npm install
+
+# 환경 변수 파일 생성
+cp .env.example .env</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="alert alert-warning">
+            <div class="alert-icon">⚠️</div>
+            <div class="alert-content">
+                <div class="alert-title">중요: AI 챗봇 콜백 기능</div>
+                카카오 챗봇 관리자센터에서 <strong>AI 챗봇 콜백 기능</strong>을 반드시 신청하세요.
+                승인에 1-2일이 소요될 수 있습니다. 이 기능 없이는 5초 타임아웃으로 AI 응답을 받을 수 없습니다.
+            </div>
+        </div>
+    </section>
+
+    <!-- Usage Section -->
+    <section class="section" id="usage">
+        <div class="section-header">
+            <div class="section-number">5</div>
+            <h2>사용법</h2>
+            <p class="section-desc">카카오톡에서 봇과 대화하는 방법</p>
+        </div>
+
+        <div class="accordion">
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <div class="accordion-title">
+                        <span class="accordion-icon">🔐</span>
+                        첫 인증 (Pairing)
+                    </div>
+                    <span class="accordion-arrow">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <div class="accordion-body">
+                        <p style="margin-bottom: 1rem;">카카오톡 채널에서 다음 명령어를 입력하세요:</p>
+                        <div class="code-block" style="border-radius: 12px;">
+                            <div class="code-content">
+                                <pre><code class="language-bash">/pair mySecretCode 홍길동</code></pre>
+                            </div>
+                        </div>
+                        <p style="margin-top: 1rem; color: var(--text-secondary);">
+                            <code>mySecretCode</code>는 .env의 <code>PAIRING_CODE</code> 값입니다.
+                            이름은 선택사항이며, 인증 후 서버 재시작해도 유지됩니다.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <div class="accordion-title">
+                        <span class="accordion-icon">💻</span>
+                        기본 명령어
+                    </div>
+                    <span class="accordion-arrow">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <div class="accordion-body">
+                        <table class="command-table">
+                            <thead>
+                                <tr>
+                                    <th>명령어</th>
+                                    <th>설명</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>/help</code></td>
+                                    <td>도움말 표시</td>
+                                </tr>
+                                <tr>
+                                    <td><code>/clear</code></td>
+                                    <td>대화 기록 초기화</td>
+                                </tr>
+                                <tr>
+                                    <td><code>/status</code></td>
+                                    <td>시스템 상태 확인</td>
+                                </tr>
+                                <tr>
+                                    <td><code>/pair [코드] [이름]</code></td>
+                                    <td>사용자 인증</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <div class="accordion-title">
+                        <span class="accordion-icon">💬</span>
+                        일반 대화 예시
+                    </div>
+                    <span class="accordion-arrow">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <div class="accordion-body">
+                        <p style="margin-bottom: 1rem;">인증 후에는 자유롭게 대화할 수 있습니다:</p>
+                        <div class="code-block" style="border-radius: 12px;">
+                            <div class="code-content">
+                                <pre><code class="language-plaintext">안녕하세요!
+오늘 날씨 어때?
+일정 알려줘
+코드 리뷰 부탁해
+이메일 초안 작성해줘</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <div class="accordion-title">
+                        <span class="accordion-icon">🛠️</span>
+                        PM2 관리 명령어
+                    </div>
+                    <span class="accordion-arrow">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <div class="accordion-body">
+                        <table class="command-table">
+                            <thead>
+                                <tr>
+                                    <th>명령어</th>
+                                    <th>설명</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>npx pm2 list</code></td>
+                                    <td>프로세스 상태 확인</td>
+                                </tr>
+                                <tr>
+                                    <td><code>npx pm2 logs clawdbot-kakaotalk</code></td>
+                                    <td>실시간 로그 보기</td>
+                                </tr>
+                                <tr>
+                                    <td><code>npx pm2 restart clawdbot-kakaotalk</code></td>
+                                    <td>서버 재시작</td>
+                                </tr>
+                                <tr>
+                                    <td><code>npx pm2 stop all</code></td>
+                                    <td>모든 프로세스 중지</td>
+                                </tr>
+                                <tr>
+                                    <td><code>npx pm2 save</code></td>
+                                    <td>현재 상태 저장 (자동 시작용)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Roadmap Section -->
+    <section class="section" id="roadmap">
+        <div class="section-header">
+            <div class="section-number">6</div>
+            <h2>개발 로드맵</h2>
+            <p class="section-desc">프로젝트의 진행 상황과 계획</p>
+        </div>
+
+        <div class="timeline">
+            <div class="timeline-item completed">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-title">
+                        <span class="check">✅</span>
+                        Phase 1: 기본 텍스트 대화
+                    </div>
+                    <div class="timeline-desc">카카오톡 연동, Clawdbot Gateway 연결, PM2 자동 재시작, Windows 시작 시 자동 실행</div>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-title">Phase 2: 리치 메시지</div>
+                    <div class="timeline-desc">버튼, 카드, 캐러셀 등 리치 메시지 지원</div>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-title">Phase 3: 도구 통합</div>
+                    <div class="timeline-desc">날씨, 캘린더 등 Clawdbot 도구 연동</div>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-title">Phase 4: 파일/이미지 처리</div>
+                    <div class="timeline-desc">이미지 분석, 파일 업로드/다운로드 지원</div>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-title">Phase 5: 음성 메시지</div>
+                    <div class="timeline-desc">음성 인식 및 음성 응답 지원</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="alert alert-info" style="margin-top: 2rem;">
+            <div class="alert-icon">📌</div>
+            <div class="alert-content">
+                <div class="alert-title">현재 TODO</div>
+                고정 도메인 터널 설정이 필요합니다. ngrok 무료 버전은 재시작 시 URL이 변경됩니다.
+                <br>옵션: ngrok Personal ($8/월) 또는 Cloudflare Tunnel (무료)
+            </div>
+        </div>
+    </section>
+
+    <!-- Security Section -->
+    <section class="section" id="security">
+        <div class="section-header">
+            <div class="section-number">7</div>
+            <h2>보안 고려사항</h2>
+            <p class="section-desc">안전한 운영을 위한 체크리스트</p>
+        </div>
+
+        <div class="module-grid">
+            <div class="module-card fade-in" style="border-left-color: var(--error);">
+                <div class="module-header">
+                    <div class="module-icon">🔑</div>
+                    <div>
+                        <div class="module-title">Pairing 코드 변경</div>
+                    </div>
+                </div>
+                <p class="module-desc">
+                    기본 pairing 코드(<code>clawdbot2024</code>)는 반드시 변경하세요.
+                    .env 파일의 <code>PAIRING_CODE</code>를 복잡한 값으로 설정합니다.
+                </p>
+            </div>
+
+            <div class="module-card fade-in" style="border-left-color: var(--success);">
+                <div class="module-header">
+                    <div class="module-icon">🔒</div>
+                    <div>
+                        <div class="module-title">HTTPS 필수</div>
+                    </div>
+                </div>
+                <p class="module-desc">
+                    Cloudflare Tunnel 또는 ngrok은 자동으로 HTTPS를 적용합니다.
+                    카카오 스킬 서버는 HTTPS URL만 허용합니다.
+                </p>
+            </div>
+
+            <div class="module-card fade-in" style="border-left-color: var(--secondary);">
+                <div class="module-header">
+                    <div class="module-icon">👥</div>
+                    <div>
+                        <div class="module-title">사용자 관리</div>
+                    </div>
+                </div>
+                <p class="module-desc">
+                    인증된 사용자는 <code>data/allowed-users.json</code>에 저장됩니다.
+                    필요시 직접 편집하여 사용자를 추가/제거할 수 있습니다.
+                </p>
+            </div>
+
+            <div class="module-card fade-in" style="border-left-color: var(--warning);">
+                <div class="module-header">
+                    <div class="module-icon">🛡️</div>
+                    <div>
+                        <div class="module-title">민감 도구 제한</div>
+                    </div>
+                </div>
+                <p class="module-desc">
+                    Clawdbot 설정에서 민감한 도구(파일 시스템, 명령 실행 등)의 권한을 제한하세요.
+                    카카오톡을 통한 시스템 접근은 위험할 수 있습니다.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>🦞 Clawdbot × 카카오톡</h4>
+                <p>카카오톡 채널을 통해 AI 어시스턴트와 대화할 수 있게 해주는 통합 플러그인입니다.</p>
+            </div>
+            <div class="footer-section">
+                <h4>주요 링크</h4>
+                <a href="https://chatbot.kakao.com" target="_blank">카카오 챗봇 관리자센터</a>
+                <a href="https://center-pf.kakao.com" target="_blank">카카오 채널 관리자센터</a>
+                <a href="https://kakaobusiness.gitbook.io" target="_blank">카카오 비즈니스 문서</a>
+            </div>
+            <div class="footer-section">
+                <h4>기술 스택</h4>
+                <p>TypeScript, Express.js, Winston, PM2, node-fetch</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>MIT License | Built with 🦞 by Clawdbot Team</p>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Highlight.js
+        hljs.highlightAll();
+
+        // Progress Bar
+        window.addEventListener('scroll', () => {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            document.getElementById('progressBar').style.width = scrolled + '%';
+        });
+
+        // Scroll Animations with GSAP
+        gsap.registerPlugin(ScrollTrigger);
+
+        document.querySelectorAll('.fade-in').forEach(el => {
+            gsap.to(el, {
+                scrollTrigger: {
+                    trigger: el,
+                    start: 'top 85%',
+                    toggleClass: 'visible'
+                }
+            });
+        });
+
+        // Code Tabs
+        const codeExamples = {
+            install: {
+                file: '터미널',
+                lang: 'bash',
+                code: `# 프로젝트 클론 및 의존성 설치
+cd clawdbot-kakaotalk
+npm install
+
+# 환경 변수 파일 생성
+cp .env.example .env`
+            },
+            env: {
+                file: '.env',
+                lang: 'bash',
+                code: `# 서버 설정
+PORT=3000
+HOST=0.0.0.0
+
+# Clawdbot 설정
+CLAWDBOT_MODE=gateway
+CLAWDBOT_GATEWAY_URL=http://localhost:18789
+CLAWDBOT_GATEWAY_TOKEN=your_token
+
+# 보안 설정 (반드시 변경!)
+PAIRING_CODE=your_secret_pairing_code
+ADMIN_KAKAO_ID=
+
+# 로깅
+LOG_LEVEL=info`
+            },
+            run: {
+                file: '터미널',
+                lang: 'bash',
+                code: `# 개발 모드 (자동 재시작)
+npm run dev
+
+# 프로덕션 빌드 및 실행
+npm run build
+npm start
+
+# 터널 실행 (별도 터미널)
+npm run tunnel`
+            },
+            pm2: {
+                file: 'ecosystem.config.js',
+                lang: 'javascript',
+                code: `module.exports = {
+  apps: [
+    {
+      name: 'clawdbot-kakaotalk',
+      script: 'dist/index.js',
+      instances: 1,
+      autorestart: true,
+      windowsHide: true,  // Windows 창 깜빡임 방지
+      max_memory_restart: '500M',
+      env: {
+        NODE_ENV: 'production',
+        PORT: 3000
+      }
+    },
+    {
+      name: 'clawdbot-gateway',
+      script: 'node_modules/clawdbot/dist/entry.js',
+      args: 'gateway --port 18789',
+      windowsHide: true,
+      env: {
+        CLAWDBOT_NODE_OPTIONS_READY: '1'
+      }
+    }
+  ]
+};`
+            }
+        };
+
+        document.querySelectorAll('.code-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
+                const tabName = tab.dataset.tab;
+                const example = codeExamples[tabName];
+
+                document.getElementById('currentFile').textContent = example.file;
+                const codeEl = document.getElementById('codeContent');
+                codeEl.className = `language-${example.lang}`;
+                codeEl.textContent = example.code;
+                hljs.highlightElement(codeEl);
+            });
+        });
+
+        // Copy Code
+        function copyCode() {
+            const code = document.getElementById('codeContent').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                const btn = document.querySelector('.code-copy');
+                btn.textContent = '✅ 복사됨!';
+                setTimeout(() => btn.textContent = '📋 복사', 2000);
+            });
+        }
+
+        // Accordion
+        function toggleAccordion(header) {
+            const item = header.parentElement;
+            item.classList.toggle('open');
+        }
+
+        // Smooth scroll for nav links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Tree item click animation
+        document.querySelectorAll('.tree-item').forEach(item => {
+            item.addEventListener('click', () => {
+                item.style.transform = 'scale(0.98)';
+                setTimeout(() => item.style.transform = '', 150);
+            });
+        });
+    </script>
+</body>
+</html>
