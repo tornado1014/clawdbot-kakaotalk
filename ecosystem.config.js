@@ -44,7 +44,9 @@ module.exports = {
         NODE_ENV: 'production',
         // 창 깜빡임 방지: spawn respawn 건너뛰기
         CLAWDBOT_NODE_OPTIONS_READY: '1',
-        NODE_OPTIONS: '--disable-warning=ExperimentalWarning'
+        NODE_OPTIONS: '--disable-warning=ExperimentalWarning',
+        // Bonjour 비활성화 (이름 충돌 방지)
+        CLAWDBOT_DISABLE_BONJOUR: '1'
       },
       exp_backoff_restart_delay: 100,
       max_restarts: 10,

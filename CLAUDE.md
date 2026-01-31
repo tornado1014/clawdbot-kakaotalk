@@ -123,3 +123,112 @@ npx pm2 restart clawdbot-kakaotalk # 재시작
 2. 도메인 등록 또는 Cloudflare 무료 도메인 사용
 3. `cloudflared` 설치 및 터널 생성
 4. Windows 서비스로 등록
+
+---
+
+## 세션 로그
+
+### 2026-01-30: 문서화 및 GitHub 배포
+
+**완료된 작업:**
+
+1. **인터랙티브 학습 페이지 생성**
+   - 파일: `clawdbot-kakaotalk-interactive-learning.html`
+   - 프로젝트 구조, 아키텍처, 설치 가이드를 시각화한 단일 HTML 파일
+   - GSAP 애니메이션, 코드 탭, 아코디언 등 인터랙티브 요소 포함
+
+2. **사용자 가이드 문서 생성**
+   - 파일: `docs/USER_GUIDE.md`
+   - 10개 섹션으로 구성된 상세 설치/사용 가이드
+   - 트러블슈팅, FAQ 포함
+
+3. **GitHub 저장소 배포**
+   - URL: https://github.com/tornado1014/clawdbot-kakaotalk
+   - 민감 정보 제거 후 force push 완료
+   - `.gitignore`에 바이너리 파일(ngrok, cloudflared) 추가
+
+4. **PM2 Gateway 문제 해결**
+   - **원인**: `exec_mode: 'fork'` 누락 → PM2가 cluster 모드로 실행 → gateway 크래시
+   - **해결**: `ecosystem.config.js`에 `exec_mode: 'fork'` 추가
+   - **교훈**: clawdbot gateway는 cluster 모드 호환 안됨
+
+**ecosystem.config.js 주의사항:**
+```javascript
+// clawdbot-gateway는 반드시 fork 모드로 실행해야 함
+{
+  name: 'clawdbot-gateway',
+  script: process.env.APPDATA + '/npm/node_modules/clawdbot/dist/entry.js',
+  exec_mode: 'fork',  // 필수! cluster 모드에서 크래시됨
+  // ...
+}
+```
+
+**PM2 재시작 명령 (PowerShell에서 실행):**
+```powershell
+Set-Location 'D:\Work_with_ClaudeD\clawdbot-kakaotalk'
+npx pm2 delete all
+npx pm2 start ecosystem.config.js
+npx pm2 save
+```
+
+⚠️ **Git Bash에서 PM2 명령 문제**: PATH 문제로 `npx pm2`가 제대로 작동하지 않을 수 있음. **PowerShell 사용 권장**.
+
+**다음 세션 TODO:**
+- [ ] 고정 도메인 터널 설정 (ngrok paid 또는 Cloudflare)
+
+### 2026-01-31: 모델 오류 및 창 깜빡임 해결
+
+**문제 1: Gateway 모델 오류**
+```
+⚠️ Agent failed before reply: Unknown model: anthropic/claude-sonnet-4
+```
+
+**원인:** `/model sonnet` 명령어로 모델 변경 시 잘못된 모델명 저장됨
+- ❌ `anthropic/claude-sonnet-4` (버전 누락)
+- ✅ `anthropic/claude-opus-4-5-20251101` (정확한 형식)
+
+**해결:**
+1. `~/.clawdbot/clawdbot.json`에서 모델명 수정
+2. `~/.clawdbot/agents/main` 폴더 삭제 (세션 캐시)
+3. 오래된 Gateway 프로세스(PM2 외부) 종료: `taskkill /F /PID <old_pid>`
+4. Gateway 재시작
+
+**문제 2: 창 깜빡임 (터미널 창이 주기적으로 깜빡임)**
+
+**진단 과정:**
+1. PM2 전체 중지 → 깜빡임 멈춤 → clawdbot 관련 확인
+2. clawdbot-kakaotalk만 시작 → 정상
+3. clawdbot-gateway 시작 → 깜빡임 시작 → gateway가 원인
+
+**원인:** Bonjour (mDNS) 서비스가 이름 충돌 해결 과정에서 subprocess 생성
+```
+[bonjour] gateway name conflict resolved; newName="DESKTOP-UL3CAOB (Clawdbot) (2)"
+```
+
+**해결:** `ecosystem.config.js`에 Bonjour 비활성화 환경변수 추가
+```javascript
+env: {
+  // ... 기존 설정
+  CLAWDBOT_DISABLE_BONJOUR: '1'  // 창 깜빡임 방지
+}
+```
+
+**추가 설정 (clawdbot.json):**
+```json
+{
+  "web": { "enabled": false }  // Control UI 비활성화 (선택)
+}
+```
+
+**커밋된 변경사항:**
+1. `ecosystem.config.js` - exec_mode fork, Bonjour 비활성화
+2. `src/command-handler.ts` - 슬래시 명령어 핸들러 분리 (신규)
+3. `src/clawdbot-bridge.ts` - 타임아웃 90초, 에러 메시지 개선
+4. `src/webhook-server.ts` - command-handler 연동
+
+**⚠️ 창 깜빡임 체크리스트:**
+- [ ] `ecosystem.config.js`에 `windowsHide: true`
+- [ ] `ecosystem.config.js`에 `CLAWDBOT_NODE_OPTIONS_READY: '1'`
+- [ ] `ecosystem.config.js`에 `CLAWDBOT_DISABLE_BONJOUR: '1'`
+- [ ] 예약 작업 비활성화: `schtasks /Change /TN "Clawdbot Gateway" /Disable`
+- [ ] clawdbot 패키지 내부 spawn에 `windowsHide: true` (업데이트 시 재확인)
