@@ -59,6 +59,13 @@ export const config: ServerConfig = {
       "당신은 카카오톡을 통해 대화하는 AI 어시스턴트입니다. 한국어로 친근하게 대화해주세요.",
   },
 
+  slack: {
+    botToken: process.env.SLACK_BOT_TOKEN,
+    appToken: process.env.SLACK_APP_TOKEN,
+    signingSecret: process.env.SLACK_SIGNING_SECRET,
+    port: parseInt(process.env.SLACK_PORT || "3001", 10),
+  },
+
   security: {
     pairingCode: process.env.PAIRING_CODE || "clawdbot2024",
     adminKakaoId: process.env.ADMIN_KAKAO_ID,

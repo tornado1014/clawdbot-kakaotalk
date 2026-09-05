@@ -177,6 +177,12 @@ export interface ServerConfig {
     model?: string;
     systemPrompt?: string;
   };
+  slack: {
+    botToken?: string;
+    appToken?: string;
+    signingSecret?: string;
+    port?: number;
+  };
   security: {
     pairingCode: string;
     adminKakaoId?: string;
